@@ -90,6 +90,19 @@ var listBoards=function(){
 
 };
 
+var groupComments=function(commentCards) {
+  var commentsByCardId =  {}
+  _.each(commentCards, function(comment) {
+    commentsByCardId[comment.data.card.id] = commentsByCardId[comment.data.card.id] || [];
+    commentsByCardId[comment.data.card.id].push({
+      text: comment.data.text,
+      date: comment.date,
+      author: comment.memberCreator.initials
+    });
+  });
+  return commentsByCardId;
+};
+
 var getBoard=function(board){
   $("#view").empty();
   $("#view").html("<h1>Loading ...</h1>");
@@ -97,7 +110,10 @@ var getBoard=function(board){
 	$("#view").html("<h1>Loading ...OK!!</h1>");
 	window.doc=board; //debug
 	window.title=board.name;
+  var groupedComments = groupComments(board.actions);
 	_.each(board.cards,function(card){ //iterate on cards
+    card.comments = groupedComments[card.id] || []
+
 		_.each(card.idChecklists,function(listId){ //iterate on checklists
 			var list=_.find(board.checklists,function(check){ //Find list
 				return check.id==listId;
@@ -124,6 +140,8 @@ var getBoard=function(board){
 
 			card.checklist=card.checklist||[]; //Make array
 			card.checklist.push(str);
+
+
 		});//iterate on checklists
 
 		card.members=_.map(card.idMembers,function(id){ // iterate on members
@@ -168,7 +186,7 @@ var getBoard=function(board){
 	//
 	// Start Rendering
 	board.displayColumns=["Name","Description","Checklists","Labels"];
-	var htmltemplate="<span id='download'></span><span id='trello-link'></span><span id='printme'></span><br><h1>{{name}} <span>[{{#formatDate}}now{{/formatDate}}]</span></h1>{{#lists}}<h2>{{name}} <span>({{size}})</span></h2><ol>{{#cards}}<li><div><strong>{{name}}</strong></div><div><small>{{#labels}}[{{name}}] {{/labels}}</small></div><div>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</div><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}</div></li>{{/cards}}</ol>{{/lists}}";
+	var htmltemplate="<span id='download'></span><span id='trello-link'></span><span id='printme'></span><br><h1>{{name}} <span>[{{#formatDate}}now{{/formatDate}}]</span></h1>{{#lists}}<h2>{{name}} <span>({{size}})</span></h2><ol>{{#cards}}<li><div><strong>{{name}}</strong></div><div><small>{{#labels}}[{{name}}] {{/labels}}</small></div><div>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</div><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}</div><div class='comments'>{{#comments}}<div><small>[{{date}}][{{author}}]</small> {{text}} </div>{{/comments}}</div></li>{{/cards}}</ol>{{/lists}}";
 	var csvtemplate="";//TODO
 
 	var str=Mustache.render(htmltemplate,board);
