@@ -168,7 +168,7 @@ var getBoard=function(board){
 	//
 	// Start Rendering
 	board.displayColumns=["Name","Description","Checklists","Labels"];
-	var htmltemplate="<h1><span id='download'></span><span id='trello-link'></span><span id='printme'></span>{{name}} <span class='right'>{{#formatDate}}now{{/formatDate}}</span></h1>{{#lists}}<h2>{{name}} <span>({{size}})</span></h2><ol>{{#cards}}<li><div><strong>{{name}}</strong></div><div><small>{{#labels}}[{{name}}] {{/labels}}</small></div><div>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</div><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}</div></li>{{/cards}}</ol>{{/lists}}";
+	var htmltemplate="<span id='download'></span><span id='trello-link'></span><span id='printme'></span><br><h1>{{name}} <span>[{{#formatDate}}now{{/formatDate}}]</span></h1>{{#lists}}<h2>{{name}} <span>({{size}})</span></h2><ol>{{#cards}}<li><div><strong>{{name}}</strong></div><div><small>{{#labels}}[{{name}}] {{/labels}}</small></div><div>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</div><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}</div></li>{{/cards}}</ol>{{/lists}}";
 	var csvtemplate="";//TODO
 
 	var str=Mustache.render(htmltemplate,board);
